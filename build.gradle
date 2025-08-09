@@ -51,8 +51,18 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//H2
+	testImplementation 'com.h2database:h2'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar'   // 항상 build/libs/app.jar로 생성
+}
+tasks.named('jar') {
+	enabled = false               // -plain.jar 같은 보조 JAR 생성 방지
 }
