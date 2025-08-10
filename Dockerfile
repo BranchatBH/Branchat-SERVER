@@ -19,7 +19,7 @@ RUN ./gradlew clean test -Dspring.profiles.active=test --no-daemon
 RUN ./gradlew bootJar --no-daemon
 
 # 2) 런타임 단계(JRE만)
-FROM eclipse-temurin:17-jre-slim
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 ENV TZ=Asia/Seoul
