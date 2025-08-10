@@ -39,9 +39,8 @@ jobs:
           images: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp
           tags: |
             type=sha
-            type=raw,value=latest,enable={{ or (eq ref "refs/heads/main") (is_default_branch) }}
-            type=raw,value=develop,enable={{ eq ref "refs/heads/develop" }}
-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
       # 도커 이미지 빌드 + 푸시
       - name: Build and (conditionally) Push
         uses: docker/build-push-action@v5
