@@ -82,7 +82,7 @@ jobs:
           script: |
             set -euo pipefail
 
-          # 디렉토리/권한 정리
+            # 디렉토리/권한 정리
             sudo mkdir -p /opt/app
             sudo chown $USER:$USER /opt/app
 
