@@ -51,7 +51,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  #CD 시작
+  # CD 시작
   deploy:
     needs: build-test
     runs-on: ubuntu-latest
@@ -70,13 +70,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+      # --- 👇 이 부분이 변수 연결의 핵심입니다 ---
       - name: Create .env file
         run: |
-          # H2 DB를 사용하는 'test' 프로필을 활성화합니다.
           echo "SPRING_PROFILES_ACTIVE=test" >> .env
-          
+          echo "DOCKERHUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "IMAGE_TAG=${{ github.sha }}" >> .env
-          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "DOCKER_HUB_PASSWORD=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env
 
       - name: Zip deployment bundle
@@ -101,18 +100,15 @@ jobs:
           set -e
           DEPLOY_ID="${{ steps.deploy.outputs.deployment_id }}"
           echo "Watching deployment: $DEPLOY_ID"
-          for i in $(seq 1 120); do   # 최대 20분(10초 x 120)
+          for i in $(seq 1 120); do
             STATUS=$(aws deploy get-deployment --deployment-id "$DEPLOY_ID" --query 'deploymentInfo.status' --output text)
             echo "[$(date -u +%H:%M:%S)] status=$STATUS"
-            # 대상/이벤트 간단 요약
             aws deploy list-deployment-targets --deployment-id "$DEPLOY_ID" --output text || true
-            # 종료 상태면 탈출
             if [ "$STATUS" = "Succeeded" ] || [ "$STATUS" = "Failed" ]; then
               break
             fi
             sleep 10
           done
-          # 마지막 상태 출력(실패 시 원인 파악용)
           aws deploy get-deployment --deployment-id "$DEPLOY_ID" --output json
           if [ "$STATUS" != "Succeeded" ]; then
             echo "Deployment not succeeded: $STATUS"
