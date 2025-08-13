@@ -81,6 +81,11 @@ jobs:
       - name: Zip deployment bundle
         run: zip -r deploy.zip appspec.yml scripts/ docker-compose.yml .env
 
+      - name: Verify zip file contents
+        run: |
+          echo "--- Verifying contents of deploy.zip ---"
+          unzip -l deploy.zip
+
       - name: Upload to S3
         run: aws s3 cp deploy.zip s3://branchat-deploy-bucket/deploy-${{ github.sha }}.zip
 
