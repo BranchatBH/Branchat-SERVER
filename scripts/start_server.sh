@@ -1,11 +1,19 @@
 #!/bin/bash
+set -e
+
+# CodeDeploy가 파일을 복사해준 위치로 이동
 cd /home/ubuntu/app
 
-# Docker Hub 로그인 (필요 시)
-echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+# .env 파일에 저장된 변수들을 현재 셸 세션으로 로드
+source .env
 
-# docker-compose.yml을 사용하여 새 버전의 이미지를 pull 받고 컨테이너 실행
-# DOCKERHUB_USER와 IMAGE_TAG는 CodeDeploy 환경변수를 통해 전달받거나,
-# .env 파일에 미리 설정해둘 수 있습니다.
-docker compose -f docker-compose.yml pull
-docker compose -f docker-compose.yml up -d
+# ### 👇 이 부분을 추가/수정합니다. ###
+# 1. 혹시 모를 이전 로그인 정보나 잘못된 설정을 깨끗하게 지웁니다.
+docker logout
+
+# 2. .env에 있는 변수를 사용하여 새로 로그인합니다.
+echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+
+# docker-compose가 컨테이너를 실행합니다.
+docker compose pull
+docker compose up -d
