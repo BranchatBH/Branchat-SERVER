@@ -19,5 +19,5 @@ echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-
 export DOCKER_CREDENTIALS_STORE=""
 
 # docker-compose가 컨테이너를 실행합니다.
-docker compose pull
-docker compose up -d
+docker compose --env-file ./.env pull
+docker compose --env-file ./.env up -d
