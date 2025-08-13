@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   api:
-    image: ${DOCKERHUB_USER}/branchat:${IMAGE_TAG}
+    image: ${DOCKERHUB_USERNAME}/branchat:${IMAGE_TAG}
     container_name: branchat-api
     ports:
       - "8080:8080"

@@ -75,7 +75,6 @@ jobs:
           # H2 DB를 사용하는 'test' 프로필을 활성화합니다.
           echo "SPRING_PROFILES_ACTIVE=test" >> .env
           
-          echo "DOCKERHUB_USER=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "IMAGE_TAG=${{ github.sha }}" >> .env
           echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "DOCKER_HUB_PASSWORD=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env
