@@ -11,7 +11,7 @@ source .env
 docker logout
 
 # .env에 정의된 변수를 사용하여 Docker Hub에 로그인합니다.
-echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
 # ### 👇 이 부분이 최종 해결책입니다 ###
 # docker-compose가 gpg 같은 외부 자격 증명 도우미를 사용하지 않도록 강제합니다.
