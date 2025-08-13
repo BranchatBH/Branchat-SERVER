@@ -37,9 +37,10 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_HUB_USERNAME }}/branchat
           tags: |
-            type=sha
+            type=sha,format=long,prefix=
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
             type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+
       # 도커 이미지 빌드 + 푸시
       - name: Build and (conditionally) Push
         uses: docker/build-push-action@v5
