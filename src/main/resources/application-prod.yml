@@ -16,8 +16,11 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         jdbc:
           time_zone: Asia/Seoul
-        timezone:
-          default_storage: NORMALIZE
+        time_zone_storage: NORMALIZE_UTC
   web:
     resources:
       add-mappings: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration

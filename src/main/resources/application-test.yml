@@ -1,11 +1,23 @@
+# H2 인메모리 DB를 사용하는 테스트 프로필
 spring:
+  # H2 DB 접속 정보
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1 # 인메모리 H2 DB 사용
     username: sa
     password:
+    driver-class-name: org.h2.Driver
+
+  # JPA 및 Hibernate 설정
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop # 테스트 실행 시 스키마를 생성하고, 끝나면 삭제
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.H2Dialect # H2 DB 방언 설정
+
+  # SQL 스크립트 실행 안 함
   sql:
     init:
       mode: never
