@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: / # 프로젝트의 모든 파일을 EC2의 지정된 경로로 복사
+    destination: /home/ubuntu/app # EC2에 파일이 복사될 위치
+hooks:
+  ApplicationStop: # 배포 시작 전, 기존 앱을 중지
+    - location: scripts/stop_server.sh
+      timeout: 30
+      runas: ubuntu
+  ApplicationStart: # 배포 파일 복사 후, 새 앱을 시작
+    - location: scripts/start_server.sh
+      timeout: 300
+      runas: ubuntu
