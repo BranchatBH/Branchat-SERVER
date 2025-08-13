@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - /run/branchat/.env
+      - ./.env
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/actuator/health" ]

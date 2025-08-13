@@ -70,8 +70,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+      - name: Create .env file
+        run: |
+          echo "SPRING_PROFILES_ACTIVE=prod" >> .env
+          echo "DOCKERHUB_USER=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
+          echo "IMAGE_TAG=${{ github.sha }}" >> .env
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
+          echo "DOCKER_HUB_PASSWORD=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env
+          # Spring Boot DB 접속 정보 등 필요한 모든 Secret을 여기에 추가
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+
       - name: Zip deployment bundle
-        run: zip -r deploy.zip appspec.yml scripts/ docker-compose.yml
+        run: zip -r deploy.zip appspec.yml scripts/ docker-compose.yml .env
 
       - name: Upload to S3
         run: aws s3 cp deploy.zip s3://branchat-deploy-bucket/deploy-${{ github.sha }}.zip
@@ -109,6 +121,3 @@ jobs:
             echo "Deployment not succeeded: $STATUS"
             exit 1
           fi
-
-      - name: Wait for deployment to finish
-        run: aws deploy wait deployment-successful --deployment-id ${{ steps.deploy.outputs.deployment_id }}
