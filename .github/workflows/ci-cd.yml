@@ -80,7 +80,7 @@ jobs:
         id: deploy
         run: |
           DEPLOY_ID=$(aws deploy create-deployment \
-            --application-name BranchatApplication \
+            --application-name branchat-CD \
             --deployment-group-name BranchatDeploymentGroup \
             --s3-location bucket=branchat-deploy-bucket,bundleType=zip,key=deploy-${{ github.sha }}.zip \
             --query 'deploymentId' --output text)
