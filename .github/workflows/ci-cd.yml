@@ -78,6 +78,9 @@ jobs:
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "IMAGE_TAG=${{ github.sha }}" >> .env
           echo "DOCKER_HUB_PASSWORD=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
       - name: Zip deployment bundle
         run: zip -r deploy.zip appspec.yml scripts/ docker-compose.yml .env
