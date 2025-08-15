@@ -7,7 +7,7 @@ spring:
     url: ${LOCAL_SPRING_DATASOURCE_URL}
     username: ${LOCAL_SPRING_DATASOURCE_USERNAME}
     password: ${LOCAL_SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
