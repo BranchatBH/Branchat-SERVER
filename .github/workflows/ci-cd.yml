@@ -74,7 +74,7 @@ jobs:
       # --- 👇 이 부분이 변수 연결의 핵심입니다 ---
       - name: Create .env file
         run: |
-          echo "SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}} >> .env
+          echo "SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}}" >> .env
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "IMAGE_TAG=${{ github.sha }}" >> .env
           echo "DOCKER_HUB_PASSWORD=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env
