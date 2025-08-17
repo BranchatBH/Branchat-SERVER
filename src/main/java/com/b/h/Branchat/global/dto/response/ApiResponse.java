@@ -1,0 +1,40 @@
+package com.b.h.Branchat.global.dto.response;
+
+import com.b.h.Branchat.global.exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record ApiResponse<T, M>(int code, String message, T data, M meta) {
+
+    public static <T> ApiResponse<T, Void> ok(String message, T data) {
+        return new ApiResponse<>(200, message, data, null);
+    }
+
+    public static <T, M> ApiResponse<T, M> ok(String message, T data, M meta) {
+        return new ApiResponse<>(200, message, data, meta);
+    }
+
+    public static ApiResponse<Void, Void> ok(String message) {
+        return new ApiResponse<>(200, message, null, null);
+    }
+
+    public static ApiResponse<Void, Void> created(String message) {
+        return new ApiResponse<>(201, message, null, null);
+    }
+
+    public static <T> ApiResponse<T, Void> created(String message, T data) {
+        return new ApiResponse<>(201, message, data, null);
+    }
+
+    public static ApiResponse<Void, Void> error(ErrorCode errorCode) {
+        return new ApiResponse<>(errorCode.getStatus().value(), errorCode.getMessage(), null, null);
+    }
+
+    public static ApiResponse<Void, ErrorMeta> error(ErrorCode errorCode, ErrorMeta meta) {
+        return new ApiResponse<>(errorCode.getStatus().value(), errorCode.getMessage(), null, meta);
+    }
+
+    public static ApiResponse<Void, ErrorMeta> error(int code, String message, ErrorMeta meta) {
+        return new ApiResponse<>(code, message, null, meta);
+    }
+}
