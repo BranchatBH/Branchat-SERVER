@@ -2,6 +2,7 @@ package com.b.h.Branchat.domain.auth.service;
 
 import com.b.h.Branchat.domain.auth.client.GoogleOAuthClient;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
+import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -26,6 +27,8 @@ public class AuthService {
     ){
         String effectiveRedirectUri = resolveRedirectUri(clientRedirectUri);
         GoogleTokenResponse tokens = googleOAuthClient.getGoogleToken(code, effectiveRedirectUri, codeVerifier);
+        GoogleUserInfo googleUserInfo = googleOAuthClient.getGoogleUserInfo(
+            tokens.accessToken());
     }
 
     private String resolveRedirectUri(String clientRedirectUri) {

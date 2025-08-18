@@ -1,13 +1,20 @@
 package com.b.h.Branchat.domain.auth.client;
 
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_TOKEN_RETRIEVAL_FAILED;
+import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_USER_INFO_RETRIEVAL_FAILED;
+import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.UNAUTHORIZED;
 
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
+import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.exception.AuthException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,4 +57,35 @@ public class GoogleOAuthClient {
             throw new AuthException(GOOGLE_TOKEN_RETRIEVAL_FAILED, e.getMessage());
         }
     }
+
+    public GoogleUserInfo getGoogleUserInfo(String accessToken) {
+        return authRestClient.get()
+            .uri("https://openidconnect.googleapis.com/v1/userinfo")
+            .headers(h -> h.setBearerAuth(accessToken))
+            .retrieve()
+            //파라미터 누락, 존재하지 않는 사용자, 비활성 사용자(구글에서) 등 처리
+            .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                throw new AuthException(
+                    UNAUTHORIZED,
+                    "Google userinfo 4xx error: " + readErrorBody(res)
+                );
+            })
+            //구글 터짐
+            .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                throw new AuthException(
+                    GOOGLE_USER_INFO_RETRIEVAL_FAILED,
+                    "Google userinfo 5xx error: " + readErrorBody(res)
+                );
+            })
+            .body(GoogleUserInfo.class);
+    }
+
+    private String readErrorBody(ClientHttpResponse res) {
+        try (var is = res.getBody()) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return "(error reading body: " + e.getMessage() + ")";
+        }
+    }
+
 }
