@@ -1,4 +1,4 @@
-package com.b.h.Branchat.global.config;
+package com.b.h.Branchat.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
