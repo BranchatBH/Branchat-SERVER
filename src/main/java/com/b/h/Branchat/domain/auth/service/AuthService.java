@@ -1,14 +1,10 @@
 package com.b.h.Branchat.domain.auth.service;
 
-import static com.b.h.Branchat.domain.auth.message.AuthMessage.LOGIN_SUCCESS;
-import static com.b.h.Branchat.domain.auth.message.AuthMessage.SIGNUP_SUCCESS;
-
 import com.b.h.Branchat.domain.auth.client.GoogleOAuthClient;
 import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.dto.response.CheckMember;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
-import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
 import com.b.h.Branchat.domain.user.entity.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,6 @@
 package com.b.h.Branchat.domain.auth.entity;
 
 import jakarta.persistence.Id;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

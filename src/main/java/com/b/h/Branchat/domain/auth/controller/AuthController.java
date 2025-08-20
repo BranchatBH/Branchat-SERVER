@@ -8,7 +8,6 @@ import com.b.h.Branchat.domain.auth.dto.request.GoogleAuthCodeRequest;
 import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
 import com.b.h.Branchat.domain.auth.service.AuthService;
-import com.b.h.Branchat.domain.auth.service.RefreshTokenService;
 import com.b.h.Branchat.global.dto.response.ApiResponse;
 import com.b.h.Branchat.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
