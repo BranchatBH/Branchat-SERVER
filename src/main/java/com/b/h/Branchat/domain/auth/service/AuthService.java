@@ -1,18 +1,16 @@
 package com.b.h.Branchat.domain.auth.service;
 
 import static com.b.h.Branchat.domain.auth.message.AuthMessage.LOGIN_SUCCESS;
+import static com.b.h.Branchat.domain.auth.message.AuthMessage.SIGNUP_SUCCESS;
 
 import com.b.h.Branchat.domain.auth.client.GoogleOAuthClient;
+import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
+import com.b.h.Branchat.domain.auth.dto.response.CheckMember;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
-import com.b.h.Branchat.domain.auth.enums.ProviderType;
-import com.b.h.Branchat.domain.auth.repository.AuthProviderRepository;
-import com.b.h.Branchat.domain.auth.entity.AuthProvider;
-import jakarta.servlet.http.HttpServletResponse;
+import com.b.h.Branchat.domain.user.entity.Member;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,33 +23,34 @@ public class AuthService {
         "https://<your-extension-id>.chromiumapp.org/"
     );
     private final GoogleOAuthClient googleOAuthClient;
-    private final AuthProviderRepository authProviderRepository;
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
+    private final AuthProviderService authProviderService;
 
     @Value("${GOOGLE_REDIRECT_URI}")
     String defaultRedirectUri;
 
-    public LoginResponse loginOrSignupWithCode(
-        String code, String codeVerifier, String clientRedirectUri, HttpServletResponse response
+    public AuthResults loginOrSignupWithCode(
+        String code, String codeVerifier, String clientRedirectUri
     ){
-        String effectiveRedirectUri = resolveRedirectUri(clientRedirectUri);
+        String effectiveRedirectUri = resolveRedirectUri(clientRedirectUri); //유효한 redirect uri인지 검증
 
+        GoogleUserInfo googleUserInfo = getGoogleUserInfoFromGoogle(code, effectiveRedirectUri, codeVerifier); //구글에서 유저 정보 가져옴
+
+        CheckMember checkMember = authProviderService.findOrCreateMember(googleUserInfo); //우리 회원인지 확인
+
+        Member member = checkMember.member(); //액세스 토큰, 리프레시 토큰 생성
+        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String refreshToken = jwtProvider.createRefreshToken(member.getId());
+
+        refreshTokenService.saveRefreshToken(refreshToken, member.getId()); //리프레시 토큰 redis에 저장
+
+        return new AuthResults(accessToken, refreshToken, checkMember.isNewMember());
+    }
+
+    private GoogleUserInfo getGoogleUserInfoFromGoogle(String code, String effectiveRedirectUri, String codeVerifier) {
         GoogleTokenResponse tokens = googleOAuthClient.getGoogleToken(code, effectiveRedirectUri, codeVerifier);
-
-        GoogleUserInfo googleUserInfo = googleOAuthClient.getGoogleUserInfo(tokens.accessToken());
-
-        Optional<AuthProvider> optionalMember = authProviderRepository.findByProviderAndProviderUserId(ProviderType.GOOGLE, googleUserInfo.sub());
-
-        if(optionalMember.isPresent()){//로그인
-            UUID userId = optionalMember.get().getMember().getId();
-            String accessToken = jwtProvider.createAccessToken(userId);
-            refreshTokenService.createAndStoreRefreshToken(userId, response);
-            return new LoginResponse(true, accessToken, LOGIN_SUCCESS);
-        }
-        //회원가입 후 로그인
-
-
+        return googleOAuthClient.getGoogleUserInfo(tokens.accessToken());
     }
 
     private String resolveRedirectUri(String clientRedirectUri) {

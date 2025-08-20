@@ -17,15 +17,6 @@ public class RefreshTokenService {
     private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void createAndStoreRefreshToken(UUID memberId, HttpServletResponse response) {
-        String refreshToken = jwtProvider.createRefreshToken(memberId);
-        //ㄴ토큰을 만들어
-        cookieUtil.createRefreshTokenCookie(response, refreshToken);
-        //ㄴ쿠키에 담아
-        saveRefreshToken(refreshToken, memberId);
-        //ㄴredis에 리프레시 토큰 넣기
-    }
-
     @Transactional
     public void saveRefreshToken(String refreshToken, UUID memberId) {
         RefreshToken token = RefreshToken.builder()

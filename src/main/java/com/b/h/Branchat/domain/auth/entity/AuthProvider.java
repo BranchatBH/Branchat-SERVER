@@ -16,12 +16,14 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder(access = AccessLevel.PROTECTED)
 @Entity
 public class AuthProvider extends BaseEntity {
     private static final int MAX_PROVIDER_LENGTH = 10;
@@ -41,4 +43,9 @@ public class AuthProvider extends BaseEntity {
 
     @Column(name = "provider_user_id", length = MAX_PROVIDER_USER_ID_LENGTH, nullable = false)
     private String providerUserId;
+
+    public static AuthProvider create(Member member, ProviderType provider, String providerUserId) {
+        return AuthProvider.builder().member(member).provider(provider)
+            .providerUserId(providerUserId).build();
+    }
 }

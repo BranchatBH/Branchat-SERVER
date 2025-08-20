@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
     private static final int MAX_NAME_LENGTH = 50;
 
@@ -32,4 +34,11 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url", columnDefinition = "TEXT", nullable = false)
     private String profileImageUrl;
 
+    public static Member create(String name, String email, String profileImageUrl) {
+        return Member.builder()
+            .name(name)
+            .email(email)
+            .profileImageUrl(profileImageUrl)
+            .build();
+    }
 }
