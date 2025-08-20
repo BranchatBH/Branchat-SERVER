@@ -1,5 +1,7 @@
 package com.b.h.Branchat.domain.auth.service;
 
+import static com.b.h.Branchat.domain.auth.message.AuthMessage.LOGIN_SUCCESS;
+
 import com.b.h.Branchat.domain.auth.client.GoogleOAuthClient;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
@@ -45,9 +47,10 @@ public class AuthService {
             UUID userId = optionalMember.get().getMember().getId();
             String accessToken = jwtProvider.createAccessToken(userId);
             refreshTokenService.createAndStoreRefreshToken(userId, response);
-            return (LoginOrSignupResponse<T>) createLoginResponse(userId, accessToken);
+            return new LoginResponse(true, accessToken, LOGIN_SUCCESS);
         }
         //회원가입 후 로그인
+
 
     }
 
