@@ -11,6 +11,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -21,7 +22,7 @@ public class AuthProviderService {
     private final MemberRepository memberRepository;
     private final AuthProvisioningService authProvisioningService;
 
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public CheckMember findOrCreateMember(GoogleUserInfo googleUserInfo) {
         // DB 조회는 기본적으로 쓰기 트랜잭션 내에서 수행해도 무방
         Optional<AuthProvider> optionalProvider = authProviderRepository.findByProviderAndProviderUserId(

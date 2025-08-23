@@ -25,9 +25,9 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class GoogleOAuthClient {
     private final RestClient authRestClient;
-    @Value("${GOOGLE_CLIENT_ID}")
+    @Value("${spring.google.client-id}")
     String clientId;
-    @Value("${GOOGLE_CLIENT_SECRET}")
+    @Value("${spring.google.client-secret}")
     String clientSecret;
 
     public GoogleTokenResponse getGoogleToken(String code, String redirectUri, String codeVerifier) {
