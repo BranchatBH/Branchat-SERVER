@@ -4,6 +4,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
 
 management:
   endpoints:
@@ -14,6 +17,3 @@ management:
     health:
       probes:
         enabled: true
-  data:
-    redis:
-      password: ${REDIS_PASSWORD}
