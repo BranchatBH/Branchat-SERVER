@@ -1,4 +1,4 @@
-package com.b.h.Branchat.domain.user.entity;
+package com.b.h.Branchat.domain.member.entity;
 
 import com.b.h.Branchat.global.entity.BaseEntity;
 import jakarta.persistence.Column;

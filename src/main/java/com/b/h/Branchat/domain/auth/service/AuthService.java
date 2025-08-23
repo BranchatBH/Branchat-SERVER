@@ -5,7 +5,7 @@ import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.dto.response.CheckMember;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleTokenResponse;
 import com.b.h.Branchat.domain.auth.dto.response.GoogleUserInfo;
-import com.b.h.Branchat.domain.user.entity.Member;
+import com.b.h.Branchat.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
