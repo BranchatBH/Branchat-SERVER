@@ -19,6 +19,7 @@ public class AuthProviderService {
 
     private final AuthProviderRepository authProviderRepository;
     private final MemberRepository memberRepository;
+    private final AuthProvisioningService authProvisioningService;
 
     @Transactional
     public CheckMember findOrCreateMember(GoogleUserInfo googleUserInfo) {
@@ -34,8 +35,7 @@ public class AuthProviderService {
 
         //회원가입 필요할 경우 유저 정보 db에 저장후 전달
         try {
-            Member newMember = createMember(googleUserInfo);
-            createAuthProvider(newMember, googleUserInfo);
+            Member newMember = authProvisioningService.createMemberAndProvider(googleUserInfo);
             return new CheckMember(newMember, true);
         }catch (DataIntegrityViolationException e) {
             return authProviderRepository

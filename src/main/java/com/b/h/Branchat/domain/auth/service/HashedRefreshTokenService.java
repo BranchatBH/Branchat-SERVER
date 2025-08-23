@@ -34,6 +34,9 @@ public class HashedRefreshTokenService {
 
     @Transactional
     public void removeRefreshToken(String refreshToken) {
+        if(refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
         String hashedToken = hashToken(refreshToken);
         hashedRefreshTokenRepository.findById(hashedToken).ifPresent(hashedRefreshTokenRepository::delete);
     }
