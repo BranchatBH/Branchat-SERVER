@@ -19,7 +19,19 @@ spring:
   web:
     resources:
       add-mappings: false
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: ${GOOGLE_REDIRECT_URI}
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expiration-milliseconds: 3600000
+    refresh-token-expiration-milliseconds: 604800000
+  data:
+    redis:
+      host: redis-server
+      port: 6379

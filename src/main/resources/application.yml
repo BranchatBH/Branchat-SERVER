@@ -4,6 +4,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
 
 management:
   endpoints:
