@@ -9,10 +9,9 @@ import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
 import com.b.h.Branchat.domain.auth.service.AuthService;
 import com.b.h.Branchat.global.dto.response.ApiResponse;
-import com.b.h.Branchat.global.util.CookieUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,34 +23,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
-    private final CookieUtil cookieUtil;
 
-    @PostMapping("/auth/oauth2/google/callback")
+    @PostMapping("/auth/login/google")
     public ResponseEntity<ApiResponse<LoginResponse, Void>> googleCallback(
         @Valid @RequestBody GoogleAuthCodeRequest request,
-        @RequestParam(value = "redirect_uri", required = false) String clientRedirectUri,
-        HttpServletResponse response) {
+        @RequestParam(value = "redirect_uri", required = false) String clientRedirectUri) {
 
         AuthResults authResults = authService.loginOrSignupWithCode(
             request.code(),
             request.codeVerifier(),
             clientRedirectUri);
 
-        //쿠키에 리프레시 토큰 담기
-        cookieUtil.createRefreshTokenCookie(response, authResults.refreshToken());
-
         //회원가입 응답
         if (authResults.isNewUser()) {
             LoginResponse loginResponse = new LoginResponse(false, authResults.accessToken(),
+                authResults.refreshToken(),
                 SIGNUP_SUCCESS);
             return ResponseEntity.ok(ApiResponse.ok(LOGIN_SIGNUP_SUCCESS, loginResponse));
         }
 
         //로그인 응답
-        LoginResponse loginResponse = new LoginResponse(true, authResults.accessToken(), LOGIN_SUCCESS);
+        LoginResponse loginResponse = new LoginResponse(true, authResults.accessToken(),
+            authResults.refreshToken(), LOGIN_SUCCESS);
+        log.info(loginResponse.toString());
         return ResponseEntity.ok(ApiResponse.ok(LOGIN_SIGNUP_SUCCESS, loginResponse));
     }
 }

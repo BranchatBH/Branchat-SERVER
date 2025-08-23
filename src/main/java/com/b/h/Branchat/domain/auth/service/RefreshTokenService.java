@@ -2,7 +2,6 @@ package com.b.h.Branchat.domain.auth.service;
 
 import com.b.h.Branchat.domain.auth.entity.RefreshToken;
 import com.b.h.Branchat.domain.auth.repository.RefreshTokenRepository;
-import com.b.h.Branchat.global.util.CookieUtil;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RefreshTokenService {
-    private final JwtProvider jwtProvider;
-    private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional

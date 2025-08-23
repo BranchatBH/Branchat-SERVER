@@ -27,11 +27,15 @@ public class GoogleOAuthClient {
     private final RestClient authRestClient;
     @Value("${GOOGLE_CLIENT_ID}")
     String clientId;
+    @Value("${GOOGLE_CLIENT_SECRET}")
+    String clientSecret;
 
     public GoogleTokenResponse getGoogleToken(String code, String redirectUri, String codeVerifier) {
+        log.info("getGoogleToken 호출됨 - code: {}, redirectUri: {}, codeVerifier: {}", code, redirectUri, codeVerifier);
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("code", code);
         form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
         form.add("code_verifier", codeVerifier);
         form.add("redirect_uri", redirectUri);
         form.add("grant_type", "authorization_code");
