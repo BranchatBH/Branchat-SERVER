@@ -9,6 +9,7 @@ import com.b.h.Branchat.domain.user.entity.Member;
 import com.b.h.Branchat.domain.user.repository.MemberRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +33,16 @@ public class AuthProviderService {
         }
 
         //회원가입 필요할 경우 유저 정보 db에 저장후 전달
-        Member newMember = createMember(googleUserInfo);
-        createAuthProvider(newMember, googleUserInfo);
-        return new CheckMember(newMember, true);
+        try {
+            Member newMember = createMember(googleUserInfo);
+            createAuthProvider(newMember, googleUserInfo);
+            return new CheckMember(newMember, true);
+        }catch (DataIntegrityViolationException e) {
+            return authProviderRepository
+                .findByProviderAndProviderUserId(ProviderType.GOOGLE, googleUserInfo.sub())
+                .map(p -> new CheckMember(p.getMember(), false))
+                .orElseThrow(() -> e);
+        }
     }
 
     private void createAuthProvider(Member member, GoogleUserInfo googleUserInfo) {

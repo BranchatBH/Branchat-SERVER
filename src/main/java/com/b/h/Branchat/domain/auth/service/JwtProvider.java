@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtProvider {
 
-    @Value("${JWT_SECRET_KEY}")
+    @Value("${spring.jwt.secret}")
     private String secret;
     private SecretKey secretKey;
     @Value("${spring.jwt.access-token-expiration-milliseconds}")
@@ -30,7 +30,7 @@ public class JwtProvider {
     @PostConstruct
     public void init() {
         byte[] keyBytes;
-        keyBytes = Base64.getDecoder().decode(secret);
+        keyBytes = Base64.getDecoder().decode(secret.trim());
         validateKeyLength(keyBytes);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes); //byte로 구성된 keybytes를 secret key 객체로 바꿈
     }

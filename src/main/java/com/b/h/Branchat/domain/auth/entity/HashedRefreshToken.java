@@ -11,9 +11,9 @@ import org.springframework.data.redis.core.index.Indexed;
 @Getter
 @NoArgsConstructor
 @RedisHash(value = "refreshToken", timeToLive = 60*60*24*14)
-public class RefreshToken {
+public class HashedRefreshToken {
     @Id
-    private String jwtRefreshToken;
+    private String hashedRefreshToken;
 
     @Indexed
     private String memberId;
@@ -23,8 +23,8 @@ public class RefreshToken {
     private Long ttl;
 
     @Builder
-    public RefreshToken(String jwtRefreshToken, String memberId) {
-        this.jwtRefreshToken = jwtRefreshToken;
+    public HashedRefreshToken(String hashedRefreshToken, String memberId) {
+        this.hashedRefreshToken = hashedRefreshToken;
         this.memberId = memberId;
         this.ttl = 60L * 60 * 24 * 14;
     }

@@ -11,8 +11,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,6 +28,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(access = AccessLevel.PROTECTED)
 @Entity
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_auth_provider_provider_user",
+            columnNames = {"provider", "provider_user_id"}
+        )
+    },
+    indexes = {
+        @Index(name = "ix_auth_provider_member", columnList = "member_id")
+    }
+)
 public class AuthProvider extends BaseEntity {
     private static final int MAX_PROVIDER_LENGTH = 10;
     private static final int MAX_PROVIDER_USER_ID_LENGTH = 255;

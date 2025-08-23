@@ -31,10 +31,6 @@ spring:
     secret: ${JWT_SECRET_KEY}
     access-token-expiration-milliseconds: 3600000
     refresh-token-expiration-milliseconds: 604800000
-  cookie:
-    domain: .branchat.p-e.kr
-    secure: true
-    path: /
   data:
     redis:
       host: redis-server
