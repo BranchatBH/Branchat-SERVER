@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -80,4 +81,5 @@ public class AuthController {
         authService.invalidateTokens(memberId, accessToken);
         
         return ResponseEntity.ok(ApiResponse.ok(REFRESH_TOKEN_DELETED));
-    }}
+    }
+}
