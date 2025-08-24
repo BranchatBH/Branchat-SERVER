@@ -28,6 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         List<String> skipPaths = List.of(
             "/api/v1/auth/login/google",
+            "/api/v1/auth/refresh",
             "/actuator/health",
             "/healthz"
         );
