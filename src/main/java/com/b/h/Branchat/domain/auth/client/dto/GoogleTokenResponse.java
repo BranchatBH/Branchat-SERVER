@@ -1,4 +1,4 @@
-package com.b.h.Branchat.domain.auth.dto.response;
+package com.b.h.Branchat.domain.auth.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

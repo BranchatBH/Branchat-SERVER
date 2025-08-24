@@ -1,4 +1,4 @@
-package com.b.h.Branchat.domain.auth.dto.response;
+package com.b.h.Branchat.domain.auth.model;
 
 import com.b.h.Branchat.domain.member.entity.Member;
 
