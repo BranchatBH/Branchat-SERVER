@@ -1,7 +1,7 @@
 package com.b.h.Branchat.domain.auth.entity;
 
 import com.b.h.Branchat.domain.auth.enums.ProviderType;
-import com.b.h.Branchat.domain.user.entity.Member;
+import com.b.h.Branchat.domain.member.entity.Member;
 import com.b.h.Branchat.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

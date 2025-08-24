@@ -2,7 +2,7 @@ package com.b.h.Branchat.domain.node.entity;
 
 import com.b.h.Branchat.domain.node.enums.AiModel;
 import com.b.h.Branchat.domain.node.enums.NodeType;
-import com.b.h.Branchat.domain.user.entity.Member;
+import com.b.h.Branchat.domain.member.entity.Member;
 import com.b.h.Branchat.global.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

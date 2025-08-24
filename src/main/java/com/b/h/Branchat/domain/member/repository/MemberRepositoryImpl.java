@@ -1,4 +1,4 @@
-package com.b.h.Branchat.domain.user.repository;
+package com.b.h.Branchat.domain.member.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
