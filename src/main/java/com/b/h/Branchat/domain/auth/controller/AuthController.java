@@ -1,12 +1,15 @@
 package com.b.h.Branchat.domain.auth.controller;
 
-import static com.b.h.Branchat.domain.auth.message.AuthMessage.LOGIN_SIGNUP_SUCCESS;
-import static com.b.h.Branchat.domain.auth.message.AuthMessage.LOGIN_SUCCESS;
-import static com.b.h.Branchat.domain.auth.message.AuthMessage.SIGNUP_SUCCESS;
+import static com.b.h.Branchat.domain.auth.controller.AuthMessage.LOGIN_SIGNUP_SUCCESS;
+import static com.b.h.Branchat.domain.auth.controller.AuthMessage.LOGIN_SUCCESS;
+import static com.b.h.Branchat.domain.auth.controller.AuthMessage.NEW_TOKENS_ISSUED;
+import static com.b.h.Branchat.domain.auth.controller.AuthMessage.SIGNUP_SUCCESS;
 
 import com.b.h.Branchat.domain.auth.dto.request.GoogleAuthCodeRequest;
+import com.b.h.Branchat.domain.auth.dto.request.NewTokensRequest;
 import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.dto.response.LoginResponse;
+import com.b.h.Branchat.domain.auth.dto.response.NewTokensResponse;
 import com.b.h.Branchat.domain.auth.service.AuthService;
 import com.b.h.Branchat.global.dto.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -51,5 +54,13 @@ public class AuthController {
             authResults.refreshToken(), LOGIN_SUCCESS);
         log.info(loginResponse.toString());
         return ResponseEntity.ok(ApiResponse.ok(LOGIN_SIGNUP_SUCCESS, loginResponse));
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<ApiResponse<NewTokensResponse, Void>> refreshCallback(@Valid @RequestBody
+        NewTokensRequest request){
+        NewTokensResponse response = authService.getNewTokens(request.refreshToken());
+        log.info(response.toString());
+        return ResponseEntity.ok(ApiResponse.ok(NEW_TOKENS_ISSUED, response));
     }
 }

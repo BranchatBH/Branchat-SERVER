@@ -30,7 +30,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/login/google", "/actuator/health", "/healthz")
+                .requestMatchers("/api/v1/auth/login/google", "/api/v1/auth/refresh","/actuator/health", "/healthz")
                 .permitAll() // 헬스만 오픈
                 .anyRequest().authenticated()
             )

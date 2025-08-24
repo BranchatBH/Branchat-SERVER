@@ -41,6 +41,15 @@ public class HashedRefreshTokenService {
         hashedRefreshTokenRepository.findById(hashedToken).ifPresent(hashedRefreshTokenRepository::delete);
     }
 
+    public void validateRefreshToken(String refreshToken, UUID memberId) {
+        String hashedToken = hashToken(refreshToken);
+        HashedRefreshToken hashedRefreshToken = hashedRefreshTokenRepository.findById(hashedToken)
+            .orElseThrow(() -> new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND));
+        if (!hashedRefreshToken.getMemberId().equals(memberId.toString())) {
+            throw new AuthException(AuthErrorCode.REFRESH_TOKEN_MISMATCH);
+        }
+    }
+
     private String hashToken(String token) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
