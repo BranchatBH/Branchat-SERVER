@@ -4,10 +4,6 @@ import com.b.h.Branchat.domain.auth.entity.HashedRefreshToken;
 import com.b.h.Branchat.domain.auth.exception.AuthErrorCode;
 import com.b.h.Branchat.domain.auth.exception.AuthException;
 import com.b.h.Branchat.domain.auth.repository.HashedRefreshTokenRepository;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,13 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class HashedRefreshTokenService {
     private final HashedRefreshTokenRepository hashedRefreshTokenRepository;
+    private final TokenHasher tokenHasher;
 
     @Transactional
     public void saveRefreshTokenAsHash(String refreshToken, UUID memberId) {
         if(refreshToken == null || refreshToken.isBlank()) {
             throw new AuthException(AuthErrorCode.REFRESH_TOKEN_NULL);
         }
-        String hashedToken = hashToken(refreshToken);
+        String hashedToken = tokenHasher.hash(refreshToken);
         HashedRefreshToken token = HashedRefreshToken.builder()
             .hashedRefreshToken(hashedToken)
             .memberId(memberId.toString())
@@ -37,26 +34,16 @@ public class HashedRefreshTokenService {
         if(refreshToken == null || refreshToken.isBlank()) {
             return;
         }
-        String hashedToken = hashToken(refreshToken);
+        String hashedToken = tokenHasher.hash(refreshToken);
         hashedRefreshTokenRepository.findById(hashedToken).ifPresent(hashedRefreshTokenRepository::delete);
     }
 
     public void validateRefreshToken(String refreshToken, UUID memberId) {
-        String hashedToken = hashToken(refreshToken);
+        String hashedToken = tokenHasher.hash(refreshToken);
         HashedRefreshToken hashedRefreshToken = hashedRefreshTokenRepository.findById(hashedToken)
             .orElseThrow(() -> new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND));
         if (!hashedRefreshToken.getMemberId().equals(memberId.toString())) {
             throw new AuthException(AuthErrorCode.REFRESH_TOKEN_MISMATCH);
-        }
-    }
-
-    private String hashToken(String token) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] digest = md.digest(token.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(digest);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AuthException(AuthErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

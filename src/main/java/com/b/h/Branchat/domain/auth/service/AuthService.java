@@ -7,20 +7,29 @@ import com.b.h.Branchat.domain.auth.client.dto.GoogleTokenResponse;
 import com.b.h.Branchat.domain.auth.client.dto.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.dto.response.NewTokensResponse;
 import com.b.h.Branchat.domain.auth.model.TokenPair;
+import com.b.h.Branchat.domain.auth.repository.HashedRefreshTokenRepository;
 import com.b.h.Branchat.domain.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final GoogleOAuthClient googleOAuthClient;
     private final JwtProvider jwtProvider;
     private final HashedRefreshTokenService hashedRefreshTokenService;
     private final AuthProviderService authProviderService;
+    private final HashedRefreshTokenRepository hashedRefreshTokenRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final TokenHasher tokenHasher;
 
     public AuthResults loginOrSignupWithCode(
         String code, String codeVerifier, String clientRedirectUri
@@ -47,6 +56,22 @@ public class AuthService {
 
         TokenPair tokens = generateAndStoreTokens(memberId);
         return new NewTokensResponse(tokens.accessToken(), tokens.refreshToken());
+    }
+
+    public void invalidateTokens(UUID memberId, String accessToken) {
+        // 1. 기존 Refresh Token 삭제
+        hashedRefreshTokenRepository.deleteByMemberId(memberId.toString());
+
+        // 2. Access Token을 해시하여 Redis에 블랙리스트로 추가
+        String hashedAccessToken = tokenHasher.hash(accessToken);
+        Date expiration = jwtProvider.getExpiration(accessToken);
+        long now = new Date().getTime();
+        long remainingTime = expiration.getTime() - now;
+
+        if (remainingTime > 0) {
+            redisTemplate.opsForValue().set(hashedAccessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
+            log.info("토큰 블랙리스트 추가 성공. Hashed Token: {}, 만료 시간: {}ms", hashedAccessToken, remainingTime);
+        }
     }
 
     private GoogleUserInfo getGoogleUserInfoFromGoogle(String code, String effectiveRedirectUri, String codeVerifier) {

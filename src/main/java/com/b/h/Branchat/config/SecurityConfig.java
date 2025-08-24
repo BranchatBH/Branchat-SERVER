@@ -21,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .permitAll() // 헬스만 오픈
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(new TokenAuthenticationFilter(jwtProvider),
+            .addFilterBefore(tokenAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class)
             .httpBasic(AbstractHttpConfigurer::disable);
         return http.build();
