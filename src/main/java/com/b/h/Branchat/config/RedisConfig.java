@@ -9,6 +9,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @Slf4j
@@ -62,5 +64,14 @@ public class RedisConfig {
         log.info("Configured Redis at {}:{} (ssl:{}, timeout:{})", host, port, ssl, commandTimeout);
         // 설정된 RedisStandaloneConfiguration과 LettuceClientConfiguration으로 LettuceConnectionFactory를 생성하여 반환합니다.
         return new LettuceConnectionFactory(redisConfig, clientConfig);
+    }
+
+    @Bean
+    public RedisTemplate<String, String> redisTemplate() {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
     }
 }

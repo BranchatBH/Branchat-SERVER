@@ -75,6 +75,10 @@ public class JwtProvider {
             Collections.emptyList());
     }
 
+    public Date getExpiration(String token) {
+        return parseClaims(token).getPayload().getExpiration();
+    }
+
     public String createAccessToken(UUID memberId) {
         return createTokenInternal(memberId, accessTokenExpirationMilliseconds, "access");
     }

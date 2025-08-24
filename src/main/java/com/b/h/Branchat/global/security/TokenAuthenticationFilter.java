@@ -1,6 +1,7 @@
 package com.b.h.Branchat.global.security;
 
 import com.b.h.Branchat.domain.auth.service.JwtProvider;
+import com.b.h.Branchat.domain.auth.service.TokenHasher;
 import java.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,9 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
@@ -20,6 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final TokenHasher tokenHasher;
 
     @Override
     protected void doFilterInternal(
@@ -39,6 +44,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         String token = resolveToken(request);
         log.debug("추출된 토큰: {}", token);
+
+        // 블랙리스트 확인 로직 추가
+        if (StringUtils.hasText(token)) {
+            String hashedToken = tokenHasher.hash(token);
+            if ("logout".equals(redisTemplate.opsForValue().get(hashedToken))) {
+                log.debug("블랙리스트에 있는 토큰입니다.");
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
+
         if (token != null && jwtProvider.validateToken(token)) {
             Authentication auth = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
