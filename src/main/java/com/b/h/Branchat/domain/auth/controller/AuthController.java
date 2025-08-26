@@ -52,6 +52,7 @@ public class AuthController {
             LoginResponse loginResponse = new LoginResponse(false, authResults.accessToken(),
                 authResults.refreshToken(),
                 SIGNUP_SUCCESS);
+            log.info(loginResponse.toString());
             return ResponseEntity.ok(ApiResponse.ok(LOGIN_SIGNUP_SUCCESS, loginResponse));
         }
 
@@ -77,7 +78,7 @@ public class AuthController {
         
         String accessToken = authorizationHeader.substring(7);
         UUID memberId = UUID.fromString(authentication.getName());
-        
+
         authService.invalidateTokens(memberId, accessToken);
         
         return ResponseEntity.ok(ApiResponse.ok(REFRESH_TOKEN_DELETED));
