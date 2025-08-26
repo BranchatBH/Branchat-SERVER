@@ -44,9 +44,11 @@ public class MemberController {
         String accessToken = authorizationHeader.substring(7);
         UUID memberId = UUID.fromString(authentication.getName());
 
-        authService.invalidateTokens(memberId, accessToken);
-
         memberService.deleteMember(memberId);
+
+        // 2. 현재 요청에 사용된 Access Token을 블랙리스트에 추가하여 즉시 무효화
+        authService.blacklistAccessToken(accessToken);
+
         log.info("Delete user info for member id {}", memberId);
         return ResponseEntity.noContent().build();
     }
