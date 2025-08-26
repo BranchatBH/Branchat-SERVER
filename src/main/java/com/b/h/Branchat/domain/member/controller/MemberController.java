@@ -1,5 +1,6 @@
 package com.b.h.Branchat.domain.member.controller;
 
+import static com.b.h.Branchat.domain.member.controller.message.MemberMessage.USER_DELETED;
 import static com.b.h.Branchat.domain.member.controller.message.MemberMessage.USER_INFO_RETRIEVED_SUCCESS;
 
 import com.b.h.Branchat.domain.member.dto.response.MemberInfoResponse;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,4 +35,10 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.ok(USER_INFO_RETRIEVED_SUCCESS, response));
     }
 
+    @DeleteMapping("/users")
+    public ResponseEntity<ApiResponse<Void, Void>> deleteUser(Authentication authentication) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        memberService.deleteMember(memberId);
+        return ResponseEntity.ok(ApiResponse.ok(USER_DELETED));
+    }
 }
