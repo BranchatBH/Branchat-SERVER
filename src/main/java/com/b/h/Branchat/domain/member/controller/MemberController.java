@@ -1,18 +1,20 @@
 package com.b.h.Branchat.domain.member.controller;
 
-import static com.b.h.Branchat.domain.member.controller.message.MemberMessage.USER_DELETED;
 import static com.b.h.Branchat.domain.member.controller.message.MemberMessage.USER_INFO_RETRIEVED_SUCCESS;
 
+import com.b.h.Branchat.domain.auth.service.AuthService;
 import com.b.h.Branchat.domain.member.dto.response.MemberInfoResponse;
 import com.b.h.Branchat.domain.member.service.MemberService;
 import com.b.h.Branchat.global.dto.response.ApiResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<MemberInfoResponse, Void>> getUserInfo(
@@ -36,9 +39,14 @@ public class MemberController {
     }
 
     @DeleteMapping("/users")
-    public ResponseEntity<ApiResponse<Void, Void>> deleteUser(Authentication authentication) {
+    public ResponseEntity<Void> deleteUser(Authentication authentication,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        String accessToken = authorizationHeader.substring(7);
         UUID memberId = UUID.fromString(authentication.getName());
+
+        authService.invalidateTokens(memberId, accessToken);
+
         memberService.deleteMember(memberId);
-        return ResponseEntity.ok(ApiResponse.ok(USER_DELETED));
+        return ResponseEntity.noContent().build();
     }
 }

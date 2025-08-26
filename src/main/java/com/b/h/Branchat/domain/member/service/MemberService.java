@@ -30,11 +30,12 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(UUID memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberException(USER_NOT_FOUND));
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberException(USER_NOT_FOUND);
+        }
 
-        authProviderRepository.deleteAllByMember(member);
-        nodeRepository.deleteAllByMember(member);
-        memberRepository.delete(member);
+        authProviderRepository.deleteAllByMemberId(memberId);
+        nodeRepository.deleteAllByMemberId(memberId);
+        memberRepository.deleteById(memberId);
     }
 }

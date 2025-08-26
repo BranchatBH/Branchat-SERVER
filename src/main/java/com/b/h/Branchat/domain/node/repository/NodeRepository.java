@@ -7,10 +7,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface NodeRepository extends JpaRepository<Node, UUID> {
 
     @Modifying
+    @Transactional
     @Query("delete from Node n where n.member = :member")
-    void deleteAllByMember(@Param("member") Member member);
+    long deleteAllByMember(@Param("member") Member member);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Node n where n.member.id = :memberId")
+    long deleteAllByMemberId(@Param("memberId") UUID memberId);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface AuthProviderRepository
@@ -18,6 +19,12 @@ public interface AuthProviderRepository
     Optional<AuthProvider> findByProviderAndProviderUserId(ProviderType providerType, String sub);
 
     @Modifying
+    @Transactional
     @Query("delete from AuthProvider ap where ap.member = :member")
-    void deleteAllByMember(@Param("member") Member member);
+    long deleteAllByMember(@Param("member") Member member);
+
+    @Modifying
+    @Transactional
+    @Query("delete from AuthProvider ap where ap.member.id = :memberId")
+    long deleteAllByMemberId(@Param("memberId") UUID memberId);
 }
