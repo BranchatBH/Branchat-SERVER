@@ -62,7 +62,12 @@ public class AuthService {
         // 1. 기존 Refresh Token 삭제
         hashedRefreshTokenRepository.deleteByMemberId(memberId.toString());
 
-        // 2. Access Token을 해시하여 Redis에 블랙리스트로 추가
+        // 2. Access Token을 블랙리스트로 추가
+        blacklistAccessToken(accessToken);
+    }
+
+    public void blacklistAccessToken(String accessToken) {
+        // Access Token을 해시하여 Redis에 블랙리스트로 추가
         String hashedAccessToken = tokenHasher.hash(accessToken);
         Date expiration = jwtProvider.getExpiration(accessToken);
         long now = new Date().getTime();
