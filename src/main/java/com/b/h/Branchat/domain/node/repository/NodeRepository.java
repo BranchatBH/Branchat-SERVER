@@ -13,11 +13,6 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
 
     @Modifying
     @Transactional
-    @Query("delete from Node n where n.member = :member")
-    long deleteAllByMember(@Param("member") Member member);
-
-    @Modifying
-    @Transactional
     @Query("delete from Node n where n.member.id = :memberId")
-    long deleteAllByMemberId(@Param("memberId") UUID memberId);
+    int deleteAllByMemberId(@Param("memberId") UUID memberId);
 }

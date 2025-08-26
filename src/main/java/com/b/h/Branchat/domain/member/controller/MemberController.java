@@ -47,6 +47,7 @@ public class MemberController {
         authService.invalidateTokens(memberId, accessToken);
 
         memberService.deleteMember(memberId);
+        log.info("Delete user info for member id {}", memberId);
         return ResponseEntity.noContent().build();
     }
 }

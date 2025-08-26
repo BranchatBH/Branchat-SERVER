@@ -20,11 +20,6 @@ public interface AuthProviderRepository
 
     @Modifying
     @Transactional
-    @Query("delete from AuthProvider ap where ap.member = :member")
-    long deleteAllByMember(@Param("member") Member member);
-
-    @Modifying
-    @Transactional
     @Query("delete from AuthProvider ap where ap.member.id = :memberId")
-    long deleteAllByMemberId(@Param("memberId") UUID memberId);
+    int deleteAllByMemberId(@Param("memberId") UUID memberId);
 }
