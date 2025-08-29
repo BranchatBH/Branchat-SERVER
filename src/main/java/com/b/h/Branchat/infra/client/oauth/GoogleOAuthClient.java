@@ -1,11 +1,11 @@
-package com.b.h.Branchat.domain.auth.client;
+package com.b.h.Branchat.infra.client.oauth;
 
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_TOKEN_RETRIEVAL_FAILED;
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_USER_INFO_RETRIEVAL_FAILED;
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.UNAUTHORIZED;
 
-import com.b.h.Branchat.domain.auth.client.dto.GoogleTokenResponse;
-import com.b.h.Branchat.domain.auth.client.dto.GoogleUserInfo;
+import com.b.h.Branchat.infra.client.oauth.dto.GoogleTokenResponse;
+import com.b.h.Branchat.infra.client.oauth.dto.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.exception.AuthException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
