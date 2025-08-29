@@ -1,8 +1,8 @@
 package com.b.h.Branchat.domain.node.entity;
 
+import com.b.h.Branchat.domain.member.entity.Member;
 import com.b.h.Branchat.domain.node.enums.AiModel;
 import com.b.h.Branchat.domain.node.enums.NodeType;
-import com.b.h.Branchat.domain.member.entity.Member;
 import com.b.h.Branchat.global.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -15,7 +15,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -32,6 +32,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Getter
 @Table(name = "node")
+@Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Node extends BaseEntity {
@@ -55,12 +56,13 @@ public class Node extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AiModel sourceAiModel;
 
-    @Lob
-    private String context;
-
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private String branchSourceInfo; // JSONB 타입, 보통 String이나 Map<String, Object>로 매핑
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private String contextCache;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_node_id")
@@ -80,4 +82,26 @@ public class Node extends BaseEntity {
             parentNode.getChildren().add(this);
         }
     }
+
+    public static Node create(Member member,
+                              NodeType type,
+                              String title,
+                              String sourceChatId,
+                              AiModel sourceAiModel,
+                              String branchSourceInfo,
+                              String contextCache,
+                              Node parentNode) {
+        Node node = Node.builder()
+                .member(member)
+                .type(type)
+                .title(title)
+                .sourceChatId(sourceChatId)
+                .sourceAiModel(sourceAiModel)
+                .branchSourceInfo(branchSourceInfo)
+                .contextCache(contextCache)
+                .build();
+        node.setParentNode(parentNode);
+        return node;
+    }
+
 }
