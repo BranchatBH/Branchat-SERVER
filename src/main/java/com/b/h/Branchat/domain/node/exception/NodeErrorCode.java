@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum NodeErrorCode implements ErrorCode {
+    //403
+    FORBIDDEN_NODE_ACCESS(HttpStatus.FORBIDDEN, "You do not have permission to access this node"),
+
     //404
     PARENT_NODE_NOT_FOUND(HttpStatus.NOT_FOUND, "Parent node not found");
 

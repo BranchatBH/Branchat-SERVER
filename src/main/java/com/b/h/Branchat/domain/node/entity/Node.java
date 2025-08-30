@@ -6,6 +6,7 @@ import com.b.h.Branchat.domain.node.enums.NodeType;
 import com.b.h.Branchat.global.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -58,11 +59,11 @@ public class Node extends BaseEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String branchSourceInfo; // JSONB 타입, 보통 String이나 Map<String, Object>로 매핑
+    private JsonNode branchSourceInfo; // JSONB 타입, 보통 String이나 Map<String, Object>로 매핑
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String contextCache;
+    private JsonNode contextCache;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_node_id")
@@ -88,8 +89,8 @@ public class Node extends BaseEntity {
                               String title,
                               String sourceChatId,
                               AiModel sourceAiModel,
-                              String branchSourceInfo,
-                              String contextCache,
+                              JsonNode branchSourceInfo,
+                              JsonNode contextCache,
                               Node parentNode) {
         Node node = Node.builder()
                 .member(member)
@@ -104,4 +105,7 @@ public class Node extends BaseEntity {
         return node;
     }
 
+    public void setContextCache(JsonNode contextCache) {
+        this.contextCache = contextCache;
+    }
 }

@@ -3,6 +3,7 @@ package com.b.h.Branchat.global.util;
 import com.b.h.Branchat.global.exception.GlobalErrorCode;
 import com.b.h.Branchat.global.exception.JsonConvertException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,24 @@ public class JsonConverter {
         }
         try {
             return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new JsonConvertException(GlobalErrorCode.JSON_CONVERSION_ERROR, e.getMessage());
+        }
+    }
+
+    public JsonNode toJsonNode(Object object) {
+        if (object == null) {
+            return null;
+        }
+        return objectMapper.valueToTree(object);
+    }
+
+    public JsonNode fromJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return objectMapper.readTree(json);
         } catch (JsonProcessingException e) {
             throw new JsonConvertException(GlobalErrorCode.JSON_CONVERSION_ERROR, e.getMessage());
         }

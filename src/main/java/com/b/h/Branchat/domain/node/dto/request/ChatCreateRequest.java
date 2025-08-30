@@ -1,7 +1,9 @@
 package com.b.h.Branchat.domain.node.dto.request;
 
 import com.b.h.Branchat.domain.node.enums.AiModel;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -20,7 +22,11 @@ public record ChatCreateRequest(String parentId,
                                 @NotEmpty(message = "메시지 목록은 비어 있을 수 없습니다.")
                                 List<@Valid MessageContent> messages,
 
-                                @Valid
-                                BranchSourceInfo branchSourceInfo) {
+                                JsonNode branchSourceInfo) {
+    @AssertTrue(message = "부모 채팅이 있으면 sourceChatId, branchSourceInfo가 둘다 채워지고, 없으면 둘 다 빈칸")
+    public boolean isBranchConsistencyValid() {
+        return (sourceChatId == null && branchSourceInfo == null)
+            || (sourceChatId != null && branchSourceInfo != null);
+    }
 
 }

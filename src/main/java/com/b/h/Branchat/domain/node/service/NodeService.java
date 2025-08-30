@@ -10,10 +10,12 @@ import com.b.h.Branchat.domain.node.dto.response.ChatCreateResponse;
 import com.b.h.Branchat.domain.node.entity.Node;
 import com.b.h.Branchat.domain.node.enums.NodeType;
 import com.b.h.Branchat.domain.node.exception.MemberException;
+import com.b.h.Branchat.domain.node.exception.NodeErrorCode;
 import com.b.h.Branchat.domain.node.exception.NodeException;
 import com.b.h.Branchat.domain.node.repository.NodeRepository;
 import com.b.h.Branchat.domain.summarize.service.SummarizeService;
 import com.b.h.Branchat.global.util.JsonConverter;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,34 +37,30 @@ public class NodeService {
     Node parentNode = nodeRepository.findById(UUID.fromString(request.parentId()))
         .orElseThrow(() -> new NodeException(PARENT_NODE_NOT_FOUND));
 
-    //if parentNode.type==folder -> parentContext = grandParentContext
-    //if free tier && parentNode.context_cache exists -> parentContext = parentNode.context_cache
-//    String parentContext = summarizeService.freeTierSummarize(request.messages());
-    String parentContext = null;
+    if (!parentNode.getMember().getId().equals(member.getId())) {
+      throw new NodeException(NodeErrorCode.FORBIDDEN_NODE_ACCESS);
+    }
+
+    JsonNode parentContext = null;
 
     //if member is free tier
     Node contextProviderNode = findNearestChatAncestor(parentNode);
 
     if(contextProviderNode != null) { // 최상위 조상이 folder가 아니었다.(상위 chat이 존재한다.)
       if(contextProviderNode.getContextCache() == null) { // 상위 chat이 context가 아직 없음 -> message로 만들어. (이 경우 직계 상위 chat임. branch로 폴더나 채팅이 파이면 무조건 context가 존재하기 때문// folder 생성 로직에 부모 context 만드는 로직 추가하기)
-        parentContext = summarizeService.freeTierSummarize(request.messages());
+        String summary = summarizeService.freeTierSummarize(request.messages());
+        parentContext = jsonConverter.fromJson(summary);
+        contextProviderNode.setContextCache(parentContext);
       } else { // context가 존재하는 경우 -> 그냥 가져다 쓰면 됨
         parentContext = contextProviderNode.getContextCache();
       }
     } // 최상위 조상이 folder였다. -> 내가 최상위 chat임. -> parentContext = null 유지.
 
-
-
-    //
-
-    //if member is pro tier
+    //if pro tier
 
     //
-
-    String branchSourceInfoJson = jsonConverter.toJson(request.branchSourceInfo());
-
     Node newChat = Node.create(member, NodeType.CHAT, request.title(), request.sourceChatId(),
-        request.sourceAiModel(), branchSourceInfoJson, null, parentNode);
+        request.sourceAiModel(), request.branchSourceInfo(), null, parentNode);
     Node savedNode = nodeRepository.save(newChat);
 
     UUID parentId = (savedNode.getParentNode() != null) ? savedNode.getParentNode().getId() : null;
