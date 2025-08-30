@@ -9,6 +9,7 @@ import com.b.h.Branchat.global.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class NodeController {
     public ResponseEntity<ApiResponse<ChatCreateResponse, Void>> createChat(@Valid @RequestBody ChatCreateRequest request, Authentication authentication) {
         UUID memberId = UUID.fromString(authentication.getName());
         ChatCreateResponse response = nodeService.createChat(request, memberId);
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.created(NODE_CREATED,response));
     }
 }
