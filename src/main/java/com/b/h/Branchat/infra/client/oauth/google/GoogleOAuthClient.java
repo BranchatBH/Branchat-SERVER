@@ -1,17 +1,17 @@
-package com.b.h.Branchat.infra.client.oauth;
+package com.b.h.Branchat.infra.client.oauth.google;
 
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_TOKEN_RETRIEVAL_FAILED;
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.GOOGLE_USER_INFO_RETRIEVAL_FAILED;
 import static com.b.h.Branchat.domain.auth.exception.AuthErrorCode.UNAUTHORIZED;
 
-import com.b.h.Branchat.infra.client.oauth.dto.GoogleTokenResponse;
-import com.b.h.Branchat.infra.client.oauth.dto.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.exception.AuthException;
+import com.b.h.Branchat.infra.client.oauth.google.config.GoogleOauthProperties;
+import com.b.h.Branchat.infra.client.oauth.google.dto.GoogleTokenResponse;
+import com.b.h.Branchat.infra.client.oauth.google.dto.GoogleUserInfo;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
@@ -22,26 +22,28 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class GoogleOAuthClient {
+
     private final RestClient authRestClient;
-    @Value("${spring.google.client-id}")
-    String clientId;
-    @Value("${spring.google.client-secret}")
-    String clientSecret;
+    private final GoogleOauthProperties properties;
+
+    public GoogleOAuthClient(@Qualifier("authRestClient") RestClient authRestClient, GoogleOauthProperties properties) {
+        this.authRestClient = authRestClient;
+        this.properties = properties;
+    }
 
     public GoogleTokenResponse getGoogleToken(String code, String redirectUri, String codeVerifier) {
         log.info("getGoogleToken 호출됨 - code: {}, redirectUri: {}, codeVerifier: {}", code, redirectUri, codeVerifier);
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("code", code);
-        form.add("client_id", clientId);
-        form.add("client_secret", clientSecret);
+        form.add("client_id", properties.clientId());
+        form.add("client_secret", properties.clientSecret());
         form.add("code_verifier", codeVerifier);
         form.add("redirect_uri", redirectUri);
-        form.add("grant_type", "authorization_code");
+        form.add("grant_type", properties.grantType());
         try {
             GoogleTokenResponse response = authRestClient.post()
-                .uri("https://oauth2.googleapis.com/token")
+                .uri(properties.tokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()
@@ -64,7 +66,7 @@ public class GoogleOAuthClient {
 
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {
         return authRestClient.get()
-            .uri("https://openidconnect.googleapis.com/v1/userinfo")
+            .uri(properties.userInfoUri())
             .headers(h -> h.setBearerAuth(accessToken))
             .retrieve()
             //파라미터 누락, 존재하지 않는 사용자, 비활성 사용자(구글에서) 등 처리
