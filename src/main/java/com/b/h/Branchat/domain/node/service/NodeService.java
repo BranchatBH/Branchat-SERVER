@@ -4,13 +4,13 @@ import static com.b.h.Branchat.domain.node.exception.MemberErrorCode.USER_NOT_FO
 import static com.b.h.Branchat.domain.node.exception.NodeErrorCode.PARENT_NODE_NOT_FOUND;
 
 import com.b.h.Branchat.domain.member.entity.Member;
-import com.b.h.Branchat.domain.node.dto.request.NodeCreateRequest;
+import com.b.h.Branchat.domain.member.repository.MemberRepository;
+import com.b.h.Branchat.domain.node.dto.request.ChatCreateRequest;
 import com.b.h.Branchat.domain.node.dto.response.ChatCreateResponse;
 import com.b.h.Branchat.domain.node.entity.Node;
 import com.b.h.Branchat.domain.node.enums.NodeType;
 import com.b.h.Branchat.domain.node.exception.MemberException;
 import com.b.h.Branchat.domain.node.exception.NodeException;
-import com.b.h.Branchat.domain.node.repository.MemberRepository;
 import com.b.h.Branchat.domain.node.repository.NodeRepository;
 import com.b.h.Branchat.domain.summarize.service.SummarizeService;
 import com.b.h.Branchat.global.util.JsonConverter;
@@ -29,7 +29,7 @@ public class NodeService {
   private final JsonConverter jsonConverter;
 
   @Transactional
-  public ChatCreateResponse createChat(NodeCreateRequest request, UUID memberId) {
+  public ChatCreateResponse createChat(ChatCreateRequest request, UUID memberId) {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new MemberException(USER_NOT_FOUND));
     Node parentNode = nodeRepository.findById(UUID.fromString(request.parentId()))
@@ -61,7 +61,7 @@ public class NodeService {
 
     String branchSourceInfoJson = jsonConverter.toJson(request.branchSourceInfo());
 
-    Node newChat = Node.create(member, request.type(), request.title(), request.sourceChatId(),
+    Node newChat = Node.create(member, NodeType.CHAT, request.title(), request.sourceChatId(),
         request.sourceAiModel(), branchSourceInfoJson, null, parentNode);
     Node savedNode = nodeRepository.save(newChat);
 

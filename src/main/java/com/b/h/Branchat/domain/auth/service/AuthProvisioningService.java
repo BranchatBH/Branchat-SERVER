@@ -1,6 +1,6 @@
 package com.b.h.Branchat.domain.auth.service;
 
-import com.b.h.Branchat.infra.client.oauth.dto.GoogleUserInfo;
+import com.b.h.Branchat.infra.client.oauth.google.dto.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.enums.ProviderType;
 import com.b.h.Branchat.domain.auth.repository.AuthProviderRepository;
 import com.b.h.Branchat.domain.member.entity.Member;

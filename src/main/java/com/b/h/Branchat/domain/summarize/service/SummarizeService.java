@@ -1,7 +1,12 @@
 package com.b.h.Branchat.domain.summarize.service;
 
+import static com.b.h.Branchat.domain.summarize.exception.SummarizeErrorCode.MESSAGE_EMPTY;
+
 import com.b.h.Branchat.domain.node.dto.request.MessageContent;
 import com.b.h.Branchat.domain.node.enums.MessageRole;
+import com.b.h.Branchat.domain.summarize.exception.SummarizeException;
+import com.b.h.Branchat.domain.summarize.port.AiClientPort;
+import com.b.h.Branchat.domain.summarize.prompt.PromptBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +19,15 @@ public class SummarizeService {
 
     private static final int SHORT_CONVERSATION_THRESHOLD = 5;
 
+    private final AiClientPort aiClientPort;
+
     /**
      * Returns a summary of the conversation as a single string.
      */
     public String freeTierSummarize(List<MessageContent> messages) {
         List<MessageContent> summaryMessages = getSummaryMessages(messages);
-
+        String prompt = PromptBuilder.buildFreeTierPrompt(summaryMessages);
+        return aiClientPort.freeAiSummarization(prompt);
     }
 
     /**
@@ -28,7 +36,7 @@ public class SummarizeService {
      */
     public List<MessageContent> getSummaryMessages(List<MessageContent> messages) {
         if (messages == null || messages.isEmpty()) {
-            return Collections.emptyList();
+            throw new SummarizeException(MESSAGE_EMPTY);
         }
 
         if (messages.size() <= SHORT_CONVERSATION_THRESHOLD) {
