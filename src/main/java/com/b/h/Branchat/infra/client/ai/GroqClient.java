@@ -1,6 +1,7 @@
 package com.b.h.Branchat.infra.client.ai;
 
-import com.b.h.Branchat.domain.node.dto.request.MessageContent;
+import com.b.h.Branchat.domain.summarize.exception.SummarizeErrorCode;
+import com.b.h.Branchat.domain.summarize.exception.SummarizeException;
 import com.b.h.Branchat.domain.summarize.port.AiClientPort;
 import com.b.h.Branchat.infra.client.ai.dto.request.GroqChatMessage;
 import com.b.h.Branchat.infra.client.ai.dto.request.GroqChatRequest;
@@ -38,7 +39,7 @@ public class GroqClient implements AiClientPort {
             "llama-3.1-8b-instant",
             0.2,
             128,
-            1,
+            1.0,
             false,
             null
         );
@@ -46,14 +47,21 @@ public class GroqClient implements AiClientPort {
         GroqChatResponse response = restClient.post()
             .uri("/chat/completions")
             .header("Authorization", "Bearer " + groqApiKey)
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
+            .onStatus(org.springframework.http.HttpStatusCode::is4xxClientError, (req, res) -> {
+                throw new RuntimeException("Groq 4xx: " + res.getStatusCode());
+            })
+            .onStatus(org.springframework.http.HttpStatusCode::is5xxServerError, (req, res) -> {
+                throw new RuntimeException("Groq 5xx: " + res.getStatusCode());
+            })
             .body(GroqChatResponse.class);
 
         return Optional.ofNullable(response)
             .map(GroqChatResponse::choices)
             .filter(choices -> !choices.isEmpty())
             .map(choices -> choices.get(0).message().content())
-            .orElse(""); // Return empty string if no summary is found
+            .orElseThrow(() -> new SummarizeException(SummarizeErrorCode.GROQ_RESPONSE_ERROR));
     }
 }

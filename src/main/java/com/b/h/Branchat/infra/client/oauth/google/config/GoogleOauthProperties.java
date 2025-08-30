@@ -7,6 +7,7 @@ public record GoogleOauthProperties(
     String clientId,
     String clientSecret,
     String tokenUri,
+    String redirectUri,
     String userInfoUri,
     String grantType
 ) {}

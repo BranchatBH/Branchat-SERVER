@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum SummarizeErrorCode implements ErrorCode {
     //400
-    MESSAGE_EMPTY(HttpStatus.BAD_REQUEST, "there is no message");
+    MESSAGE_EMPTY(HttpStatus.BAD_REQUEST, "there is no message"),
+
+    //500
+    GROQ_RESPONSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "No valid response from Groq API");
 
     private final HttpStatus status;
     private final String message;

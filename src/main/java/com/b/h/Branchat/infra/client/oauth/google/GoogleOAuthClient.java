@@ -33,7 +33,7 @@ public class GoogleOAuthClient {
     }
 
     public GoogleTokenResponse getGoogleToken(String code, String redirectUri, String codeVerifier) {
-        log.info("getGoogleToken 호출됨 - code: {}, redirectUri: {}, codeVerifier: {}", code, redirectUri, codeVerifier);
+        log.info("getGoogleToken 호출됨");
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("code", code);
         form.add("client_id", properties.clientId());
