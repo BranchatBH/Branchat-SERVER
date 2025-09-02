@@ -34,7 +34,7 @@ public class NodeService {
   public ChatCreateResponse createChat(ChatCreateRequest request, UUID memberId) {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new MemberException(USER_NOT_FOUND));
-    Node parentNode = nodeRepository.findById(UUID.fromString(request.parentId()))
+    Node parentNode = nodeRepository.findById(request.parentId())
         .orElseThrow(() -> new NodeException(PARENT_NODE_NOT_FOUND));
 
     if (!parentNode.getMember().getId().equals(member.getId())) {
