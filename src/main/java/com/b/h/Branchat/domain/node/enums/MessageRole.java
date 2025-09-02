@@ -2,7 +2,7 @@ package com.b.h.Branchat.domain.node.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum NodeType {
-    @JsonProperty("folder") FOLDER,
-    @JsonProperty("chat") CHAT
+public enum MessageRole {
+    @JsonProperty("user") USER,
+    @JsonProperty("ai") AI
 }

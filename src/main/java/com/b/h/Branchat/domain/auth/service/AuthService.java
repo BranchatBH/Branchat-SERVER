@@ -1,10 +1,10 @@
 package com.b.h.Branchat.domain.auth.service;
 
-import com.b.h.Branchat.domain.auth.client.GoogleOAuthClient;
+import com.b.h.Branchat.infra.client.oauth.google.GoogleOAuthClient;
 import com.b.h.Branchat.domain.auth.dto.response.AuthResults;
 import com.b.h.Branchat.domain.auth.model.CheckMember;
-import com.b.h.Branchat.domain.auth.client.dto.GoogleTokenResponse;
-import com.b.h.Branchat.domain.auth.client.dto.GoogleUserInfo;
+import com.b.h.Branchat.infra.client.oauth.google.dto.GoogleTokenResponse;
+import com.b.h.Branchat.infra.client.oauth.google.dto.GoogleUserInfo;
 import com.b.h.Branchat.domain.auth.dto.response.NewTokensResponse;
 import com.b.h.Branchat.domain.auth.model.TokenPair;
 import com.b.h.Branchat.domain.auth.repository.HashedRefreshTokenRepository;

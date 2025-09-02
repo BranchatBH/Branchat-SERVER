@@ -17,3 +17,8 @@ management:
     health:
       probes:
         enabled: true
+
+groq:
+  api:
+    url: https://api.groq.com/openai/v1
+    key: ${GROQ_API_KEY}

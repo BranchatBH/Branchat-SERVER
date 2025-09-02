@@ -1,4 +1,4 @@
-package com.b.h.Branchat.domain.auth.client.dto;
+package com.b.h.Branchat.infra.client.oauth.google.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
