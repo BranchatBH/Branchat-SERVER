@@ -6,7 +6,9 @@ import static com.b.h.Branchat.domain.node.exception.NodeErrorCode.PARENT_NODE_N
 import com.b.h.Branchat.domain.member.entity.Member;
 import com.b.h.Branchat.domain.member.repository.MemberRepository;
 import com.b.h.Branchat.domain.node.dto.request.ChatCreateRequest;
+import com.b.h.Branchat.domain.node.dto.request.FolderCreateRequest;
 import com.b.h.Branchat.domain.node.dto.response.ChatCreateResponse;
+import com.b.h.Branchat.domain.node.dto.response.FolderCreateResponse;
 import com.b.h.Branchat.domain.node.entity.Node;
 import com.b.h.Branchat.domain.node.enums.NodeType;
 import com.b.h.Branchat.domain.node.exception.MemberException;
@@ -34,7 +36,7 @@ public class NodeService {
   public ChatCreateResponse createChat(ChatCreateRequest request, UUID memberId) {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new MemberException(USER_NOT_FOUND));
-    Node parentNode = nodeRepository.findById(UUID.fromString(request.parentId()))
+    Node parentNode = nodeRepository.findById(request.parentId())
         .orElseThrow(() -> new NodeException(PARENT_NODE_NOT_FOUND));
 
     if (!parentNode.getMember().getId().equals(member.getId())) {
@@ -65,6 +67,28 @@ public class NodeService {
 
     UUID parentId = (savedNode.getParentNode() != null) ? savedNode.getParentNode().getId() : null;
     return new ChatCreateResponse(savedNode.getId(), parentId, savedNode.getSourceChatId(), savedNode.getTitle(), parentContext);
+  }
+
+  @Transactional
+  public FolderCreateResponse createFolder(FolderCreateRequest request, UUID memberId) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new MemberException(USER_NOT_FOUND));
+
+    Node parentNode = null;
+
+    if(request.parentId() != null) {
+      parentNode = nodeRepository.findById(request.parentId())
+          .orElseThrow(() -> new NodeException(PARENT_NODE_NOT_FOUND));
+      if (!parentNode.getMember().getId().equals(member.getId())) {
+        throw new NodeException(NodeErrorCode.FORBIDDEN_NODE_ACCESS);
+      }
+    }
+
+    Node newFolder = Node.create(member, NodeType.FOLDER, request.title(), null, null, null, null, parentNode);
+    Node savedNode = nodeRepository.save(newFolder);
+
+    UUID parentId = (savedNode.getParentNode() != null) ? savedNode.getParentNode().getId() : null;
+    return new FolderCreateResponse(savedNode.getId(), parentId, savedNode.getTitle());
   }
 
   private Node findNearestChatAncestor(Node startNode) {

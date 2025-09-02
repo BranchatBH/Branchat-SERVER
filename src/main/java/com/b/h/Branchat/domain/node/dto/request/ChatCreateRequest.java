@@ -5,17 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import java.util.UUID;
 
 public record ChatCreateRequest(
-    @NotBlank(message = "parentId는 필수입니다.")
-    @Pattern(
-        regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-        message = "parentId 형식(UUID)이 올바르지 않습니다."
-    ) String parentId,
+    @NotNull(message = "parentId는 필수입니다.")
+    UUID parentId,
 
     @NotBlank(message = "title은 비어 있을 수 없습니다.")
     @Size(max = 200, message = "title은 최대 200자입니다.")

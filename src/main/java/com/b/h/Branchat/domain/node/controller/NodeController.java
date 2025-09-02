@@ -1,9 +1,12 @@
 package com.b.h.Branchat.domain.node.controller;
 
+import static com.b.h.Branchat.domain.node.controller.message.NodeMessage.FOLDER_CREATED;
 import static com.b.h.Branchat.domain.node.controller.message.NodeMessage.NODE_CREATED;
 
 import com.b.h.Branchat.domain.node.dto.request.ChatCreateRequest;
+import com.b.h.Branchat.domain.node.dto.request.FolderCreateRequest;
 import com.b.h.Branchat.domain.node.dto.response.ChatCreateResponse;
+import com.b.h.Branchat.domain.node.dto.response.FolderCreateResponse;
 import com.b.h.Branchat.domain.node.service.NodeService;
 import com.b.h.Branchat.global.dto.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -21,13 +24,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class NodeController {
+
     private final NodeService nodeService;
 
     @PostMapping("/nodes/chat")
-    public ResponseEntity<ApiResponse<ChatCreateResponse, Void>> createChat(@Valid @RequestBody ChatCreateRequest request, Authentication authentication) {
+    public ResponseEntity<ApiResponse<ChatCreateResponse, Void>> createChat(
+        @Valid @RequestBody ChatCreateRequest request, Authentication authentication) {
         UUID memberId = UUID.fromString(authentication.getName());
         ChatCreateResponse response = nodeService.createChat(request, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.created(NODE_CREATED,response));
+            .body(ApiResponse.created(NODE_CREATED, response));
+    }
+
+    @PostMapping("/nodes/folder")
+    public ResponseEntity<ApiResponse<FolderCreateResponse, Void>> createFolder(
+        @Valid @RequestBody FolderCreateRequest request, Authentication authentication) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        FolderCreateResponse response = nodeService.createFolder(request, memberId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.created(FOLDER_CREATED, response));
     }
 }
